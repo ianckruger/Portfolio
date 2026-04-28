@@ -5,31 +5,30 @@
                <Title class="title" :title="data.title" :description="data.description" :whiteBar="false"/>
             </div>
 
-        <div class="containter-fluid">
-            <Timeline :value="data.projects" align="left" class="projects-timeline">
-            <template #marker="slotProps">
-                <span class="custom-marker">
-                    <i class="bi bi-arrow-down-right-circle-fill"></i>
-                </span>
-            </template>
-                <template #opposite="slotProps">
-                    <small class="date">{{  slotProps.item.date }}</small>
-                </template>
-                <template #content="slotProps">
-                        <div class=project-card data-aos="fade-up">
-                            <h4 v-html="slotProps.item.title"></h4>
-                            <p v-html="slotProps.item.content"></p>
+        <div class="container-fluid">
+            <div class="projects-grid">
+              <div 
+                v-for="project in data.projects" 
+                :key="project.title" 
+                class="project-card"
+              >
+                <img 
+                  v-if="project.image"
+                  :src="getImgUrl(project.image)" 
+                  class="project-image"
+                />
 
+                <h3 v-html="project.title"></h3>
+                <p v-html="project.content"></p>
 
-                            <div class="media-wrapper">
-                                <img v-if="slotProps.item.image"
-                                    :src="getImgUrl(slotProps.item.image)"
-                                    class="project-image">
-                                </img>
-                            </div>
-                        </div>
-                </template>
-            </Timeline>
+                <router-link 
+                  :to="`/projects/${project.slug}`"
+                  class="button-link"
+                >
+                  <button class="view-btn">View Project</button>
+                </router-link>
+              </div>
+            </div>
         </div>
     </div>
     <div v-else>
@@ -41,8 +40,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import Title from '../components/Title.vue';
-import Timeline from 'primevue/timeline';
-
 
 const data = ref({ title: "", description: "", items: [] });
 
@@ -63,115 +60,99 @@ function getImgUrl(img) {
 
 <style>
 #projects {
-    width: 100%;
-    min-height: 80vh;
-    padding: 50px 20px;
-    background-color: #f8f9fa;
+  width: 100%;
+  min-height: 80vh;
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #f8f9fa, #eef1f5);
 }
 
 .title {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .container-fluid {
-    max-width: 1200px;
-    margin: 0 auto;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.p-timeline-event {
-    display: grid !important;
-    grid-template-columns: 1fr 40px 3fr;
-    align-items: start !important;
-    margin-bottom: 40px !important;
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
 }
 
-.p-timeline-event-separator {
-
-  position: relative;
-  
-}
-
-.p-timeline-event-separator::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 19px; /* adjust so it lines up with your marker */
-  width: 2px;
-  background: black; /* timeline bar color */
-  margin-top: 20px;
-  height: 470px;
-}
-
-
-
-
-
-
-/* Date styling */
-.date {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 600;
-}
-
-/* Project card styling */
 .project-card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-    border-left: 4px solid #007bff;
-    width: 70%;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.project-card h4 {
-    margin: 0 0 15px 0;
-    color: #2c3e50;
-    font-size: 1.25rem;
-}
 
-.project-card p {
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
-
-.media-wrapper {
-    margin-top: 20px;
+.project-card:hover {
+  transform: translateY(-8px);
 }
 
 .project-image {
-    width: 100%;
-    max-height: 250px;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-/* Responsive adjustments */
+.project-card:hover .project-image {
+  transform: scale(1.05);
+}
+
+.project-card h3 {
+  font-size: 1.3rem;
+  margin: 20px 20px 10px;
+  color: #1f2d3d;
+}
+
+.project-card p {
+  font-size: 0.95rem;
+  color: #5f6b7a;
+  line-height: 1.6;
+  margin: 0 20px 20px;
+  flex-grow: 1;
+}
+
+.button-link {
+  text-decoration: none;
+}
+
+.view-btn {
+  margin: 0 20px 20px;
+  padding: 10px 16px;
+  border: none;
+  background: #111827;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  background: #2563eb;
+}
+
+
 @media (max-width: 768px) {
-    :deep(.p-timeline-event-opposite) {
-        flex: 0 0 100% !important;
-        text-align: center !important;
-        padding-right: 0 !important;
-        padding-bottom: 10px !important;
-    }
-    
-    :deep(.p-timeline-event-content) {
-        flex: 0 0 100% !important;
-        padding-left: 0 !important;
-    }
-    
-    :deep(.p-timeline-event-separator) {
-        display: none !important;
-    }
-    
-    .project-card {
-        margin-left: 0;
-    }
+  #projects {
+    padding: 60px 15px;
+  }
+
+  .projects-grid {
+    gap: 25px;
+  }
 }
 
 </style>
